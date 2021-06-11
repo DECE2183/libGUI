@@ -1,0 +1,15 @@
+{
+  "name": "GUI lib for bitluni ESP32Lib",
+  "keywords": "VGA, GUI, UI, graphics, font, arduino, esp32, display, bitluni, DECE",
+  "description": "Provides GUI overhead for VGA part of ESP32Lib.",
+  "authors": [
+    {
+      "name": "DECE",
+      "url": "https://github.com/DECE2183",
+      "maintainer": true
+    }
+  ],
+  "version": "0.1.0",
+  "frameworks": "arduino",
+  "platforms": "espressif32"
+}
