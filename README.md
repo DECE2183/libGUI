@@ -1,2 +1,2 @@
-# libGUI-for-ESP32Lib
+# libGUI
 GUI library for ESP32Lib
