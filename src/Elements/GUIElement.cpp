@@ -1,6 +1,11 @@
 #include "GUIElement.h"
 
 //================= CONSTRUCTOR ===================//
+GUIElement::GUIElement(GUIElement *parent)
+{
+  parent->addChild(this);
+}
+
 GUIElement::GUIElement(iVector2 pos, iVector2 size)
 {
   _position = pos;
@@ -10,25 +15,44 @@ GUIElement::GUIElement(iVector2 pos, iVector2 size)
 GUIElement::GUIElement(iVector2 pos, iVector2 size, GUIElement *parent)
 {
   GUIElement(pos, size);
-  _parent = parent;
+  parent->addChild(this);
+}
+
+//================= DESTRUCTOR ===================//
+GUIElement::~GUIElement()
+{
+  if (!_children.empty())
+  {
+    for (uint16_t i = 0; i < _children.size(); i++)
+    {
+      delete _children.at(i);
+    }
+  }
+
+  if (hasParent())
+  {
+    _parent->removeChild(this);
+    _parent->render();
+  }
 }
 
 //================= PUBLIC ===================//
 void GUIElement::addChild(GUIElement * child)
 {
-  if (child->getParent() != this)
-  {
-    child->setParent(this);
-  }
+  // if (child->getParent() != this)
+  // {
+  //   child->setParent(this);
+  // }
 
-  if (!_children.empty())
-  {
-    for (uint16_t i = 0; i < _children.size(); i++)
-    {
-      if (_children.at(i) == child) return;
-    }
-  }
+  // if (!_children.empty())
+  // {
+  //   for (uint16_t i = 0; i < _children.size(); i++)
+  //   {
+  //     if (_children.at(i) == child) return;
+  //   }
+  // }
 
+  child->setParent(this);
   _children.push_back(child);
 }
 
@@ -75,7 +99,7 @@ iVector2 GUIElement::getGlobalPosition()
   GUIElement * parent = _parent;
   while (parent != NULL)
   {
-    pos += _parent->getPosition();
+    pos += parent->getPosition();
     parent = parent->getParent();
   }
   pos += _position;
@@ -90,6 +114,8 @@ iVector2 GUIElement::getParentSize()
 
   return _parent->getSize();
 }
+
+void GUIElement::render() {};
 
 
 //================= PROTECTED ===================//

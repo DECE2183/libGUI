@@ -36,12 +36,12 @@ public:
     return *this;
   }
 
-  Vector2 operator+(const Vector2 &v2) const
+  Vector2<number> operator+(const Vector2 &v2) const
   {
     return Vector2(x + v2.x, y + v2.y);
   }
 
-  Vector2 operator-(const Vector2 &v2) const
+  Vector2<number> operator-(const Vector2 &v2) const
   {
     return Vector2(x - v2.x, y - v2.y);
   }
@@ -65,33 +65,5 @@ public:
   }
 };
 
-
-class iVector2 : public Vector2<int>
-{
-public:
-  iVector2()
-  {
-    x = 0;
-    y = 0;
-  }
-  iVector2(int x, int y) : Vector2<int>(x, y) { ; }
-
-  virtual int length() const
-  {
-    int l2 = x * x + y * y;
-    if (!l2)
-      return 0.f;
-    return (int)round(sqrt(l2));
-  }
-};
-
-class fVector2 : public Vector2<float>
-{
-public:
-  fVector2()
-  {
-    x = 0.0f;
-    y = 0.0f;
-  }
-  fVector2(float x, float y) : Vector2<float>(x, y) { ; }
-};
+typedef Vector2<int> iVector2;
+typedef Vector2<float> fVector2;

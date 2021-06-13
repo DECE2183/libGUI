@@ -7,26 +7,13 @@ class GUIElement
 {
 public:
   //------ Constructors ------//
+  GUIElement(){};
+  GUIElement(GUIElement *parent);
   GUIElement(iVector2 pos, iVector2 size);
   GUIElement(iVector2 pos, iVector2 size, GUIElement * parent);
 
   //------ Destructor ------//
-  virtual ~GUIElement()
-  {
-    if (!_children.empty())
-    {
-      for (uint16_t i = 0; i < _children.size(); i++)
-      {
-        delete _children.at(i);
-      }
-    }
-
-    if (hasParent())
-    {
-      _parent->removeChild(this);
-      _parent->render();
-    }
-  }
+  virtual ~GUIElement();
 
   //------ Operators ------//
   bool equal(GUIElement *el)
@@ -40,8 +27,8 @@ public:
 
   //------ Getters ------//
   bool getVisible()                          { return _visible; }
-  iVector2 getPosition()                     { return _position; }
-  iVector2 getSize()                         { return _size; }
+  const iVector2 &getPosition()              { return _position; }
+  const iVector2 &getSize()                  { return _size; }
   GUIElement * getParent()                   { return _parent; }
   GUIElement * getChild(uint16_t childIndex) { return _children.at(childIndex); }
   uint16_t childrenCount()                   { return _children.size(); }
@@ -52,12 +39,12 @@ public:
     _visible = vis;
     renderParent();
   }
-  void setPosition(iVector2 pos)
+  void setPosition(const iVector2 &pos)
   {
     _position = pos;
     renderParent();
   }
-  void setSize(iVector2 size)
+  void setSize(const iVector2 &size)
   {
     _size = size;
     renderParent();
@@ -73,20 +60,26 @@ public:
 
 
   //------ Control methods ------//
-  void addChild(GUIElement * child);
+  void addChild(GUIElement *child);
+  void addChild(GUIElement &child)         { addChild(&child); }
   void removeChild(uint16_t childIndex);
-  void removeChild(GUIElement * child);
-  bool hasChild(GUIElement * child);
+  void removeChild(GUIElement *child);
+  void removeChild(GUIElement &child)      { removeChild(&child); }
+  bool hasChild(GUIElement *child);
+  bool hasChild(GUIElement &child)         { return hasChild(&child); }
   bool hasChildren();
-  void setParent(GUIElement * parent);
+  void setParent(GUIElement *parent);
+  void setParent(GUIElement &parent)       { setParent(&parent); }
   bool hasParent();
 
   void bringToFront();
-  void bringToFront(GUIElement * child);
+  void bringToFront(GUIElement *child);
+  void bringToFront(GUIElement &child)     { bringToFront(&child); }
   void bringToFront(uint16_t childIndex);
 
   void toBackground();
   void toBackground(GUIElement *child);
+  void toBackground(GUIElement &child)     { toBackground(&child); }
   void toBackground(uint16_t childIndex);
 
   iVector2 getGlobalPosition();
