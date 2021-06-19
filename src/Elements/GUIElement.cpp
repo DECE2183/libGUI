@@ -1,22 +1,50 @@
 #include "GUIElement.h"
+#include "../GUIManager.h"
 
 //================= CONSTRUCTOR ===================//
+GUIElement::GUIElement()
+{
+  _styles = &DefaultStyle;
+}
 GUIElement::GUIElement(GUIElement *parent)
 {
   parent->addChild(this);
 }
-
 GUIElement::GUIElement(iVector2 pos, iVector2 size)
 {
   _position = pos;
   _size = size;
+  _styles = &DefaultStyle;
 }
-
 GUIElement::GUIElement(iVector2 pos, iVector2 size, GUIElement *parent)
 {
-  GUIElement(pos, size);
+  _position = pos;
+  _size = size;
   parent->addChild(this);
 }
+
+GUIElement::GUIElement(StyleSheet *style)
+{
+  _styles = style;
+}
+GUIElement::GUIElement(GUIElement *parent, StyleSheet *style) : GUIElement(parent)
+{
+  _styles = style;
+}
+GUIElement::GUIElement(iVector2 pos, iVector2 size, StyleSheet *style) : GUIElement(pos, size)
+{
+  _styles = style;
+}
+GUIElement::GUIElement(iVector2 pos, iVector2 size, GUIElement *parent, StyleSheet *style) : GUIElement(pos, size, parent)
+{
+  _styles = style;
+}
+
+GUIElement::GUIElement(StyleSheet &style) : GUIElement(&style) {}
+GUIElement::GUIElement(GUIElement &parent) : GUIElement(&parent) {}
+GUIElement::GUIElement(GUIElement &parent, StyleSheet &style) : GUIElement(&parent, &style) {}
+GUIElement::GUIElement(iVector2 pos, iVector2 size, StyleSheet &style) : GUIElement(pos, size, &style) {}
+GUIElement::GUIElement(iVector2 pos, iVector2 size, GUIElement &parent, StyleSheet &style) : GUIElement(pos, size, &parent, &style) {}
 
 //================= DESTRUCTOR ===================//
 GUIElement::~GUIElement()
@@ -25,7 +53,7 @@ GUIElement::~GUIElement()
   {
     for (uint16_t i = 0; i < _children.size(); i++)
     {
-      delete _children.at(i);
+      delete &_children.at(i);
     }
   }
 
@@ -36,21 +64,42 @@ GUIElement::~GUIElement()
   }
 }
 
+//================= Copy constructor ===================//
+GUIElement::GUIElement(const GUIElement &from)
+{
+  _visible = from._visible;
+
+  _position = from._position;
+  _size = from._size;
+
+  _state = from._state;
+  for (uint8_t i = 0; i < State::EnumSize; i++)
+  {
+    _styles[i] = from._styles[i];
+  }
+
+  _parent = from._parent;
+  _children = from._children;
+
+  container = from.container;
+  autorender = from.autorender;
+}
+
 //================= PUBLIC ===================//
 void GUIElement::addChild(GUIElement * child)
 {
-  // if (child->getParent() != this)
-  // {
-  //   child->setParent(this);
-  // }
+  if (!_children.empty())
+  {
+    for (uint16_t i = 0; i < _children.size(); i++)
+    {
+      if (_children.at(i) == child) return;
+    }
+  }
 
-  // if (!_children.empty())
-  // {
-  //   for (uint16_t i = 0; i < _children.size(); i++)
-  //   {
-  //     if (_children.at(i) == child) return;
-  //   }
-  // }
+  if (child->hasParent() && child->getParent() != this)
+  {
+    child->getParent()->removeChild(child);
+  }
 
   child->setParent(this);
   _children.push_back(child);
@@ -70,12 +119,12 @@ void GUIElement::removeChild(GUIElement * child)
   }
 }
 
-bool GUIElement::hasChild(GUIElement * child)
+bool GUIElement::hasChild(const GUIElement *child) const
 {
   return (findChildIndex(child) > -1);
 }
 
-bool GUIElement::hasChildren()
+bool GUIElement::hasChildren() const
 {
   return (!_children.empty());
 }
@@ -83,14 +132,15 @@ bool GUIElement::hasChildren()
 void GUIElement::setParent(GUIElement *parent)
 {
   _parent = parent;
+  _styles = parent->getStyle();
 }
 
-bool GUIElement::hasParent()
+bool GUIElement::hasParent() const
 {
   return (_parent != NULL && _parent->hasChild(this));
 }
 
-iVector2 GUIElement::getGlobalPosition()
+iVector2 GUIElement::getGlobalPosition() const
 {
   if (_parent == NULL)
     return _position;
@@ -107,7 +157,7 @@ iVector2 GUIElement::getGlobalPosition()
   return pos;
 }
 
-iVector2 GUIElement::getParentSize()
+iVector2 GUIElement::getParentSize() const
 {
   if (_parent == NULL)
     return _size;
@@ -115,11 +165,58 @@ iVector2 GUIElement::getParentSize()
   return _parent->getSize();
 }
 
-void GUIElement::render() {};
+void GUIElement::render()
+{
+  if (GUIManager::canRender() != true || _visible == false)
+    return;
+}
 
+void GUIElement::startClick()
+{
+  setState(Pressed);
+}
+void GUIElement::endClick()
+{
+  if (hasChildren() == true)
+  {
+    setState(Normal);
+  }
+  else
+  {
+    setState(Hover);
+  }
+
+  onClick.trigger();
+}
+
+void GUIElement::select()
+{
+  if (isSelecable() == false) return;
+
+  setState(Hover);
+}
+void GUIElement::unselect()
+{
+  setState(Normal);
+}
+
+void GUIElement::setState(State state)
+{
+  _state = state;
+  if (autorender == true)
+    render();
+
+  if (!_children.empty())
+  {
+    for (uint16_t i = 0; i < _children.size(); i++)
+    {
+      _children.at(i)->setState(state);
+    }
+  }
+}
 
 //================= PROTECTED ===================//
-int GUIElement::findChildIndex(GUIElement * child)
+int GUIElement::findChildIndex(const GUIElement *child) const
 {
   if (!_children.empty())
   {

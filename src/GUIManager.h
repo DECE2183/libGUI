@@ -1,5 +1,4 @@
 #pragma once
-// #include <ESP32Lib.h>
 #include <Tools/Log.h>
 #include <Graphics/Graphics.h>
 #include <Elements/GUIElement.h>
@@ -15,4 +14,8 @@ namespace GUIManager
   Screen *getScreen();
 
   void render();
+  bool canRender();
+
+  void renderChar(iVector2 pos, char ch, Color color, const GFont *Font);
+  void renderChar(iVector2 pos, char ch, Color color, const GFont &font);
 }
