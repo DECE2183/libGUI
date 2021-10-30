@@ -1,19 +1,16 @@
 #include "Label.h"
 
 //================= CONSTRUCTOR ===================//
-Label::Label()
+Label::Label(iVector2 pos, iVector2 size, const char *text, GUIElement *parent, StyleSheet *style) : GUIElement(pos, size, parent, style), _text(text)
 {
-  _text = "";
+  container = false;
+  _selectable = false;
 }
-
-Label::Label(iVector2 pos, iVector2 size, const char *text) : GUIElement(pos, size), _text(text) { container = false; _selectable = false; }
-Label::Label(iVector2 pos, iVector2 size, GUIElement *parent, const char *text) : GUIElement(pos, size, parent), _text(text) { container = false; _selectable = false; }
-Label::Label(iVector2 pos, iVector2 size, GUIElement &parent, const char *text) : GUIElement(pos, size, &parent), _text(text) { container = false; _selectable = false; }
-
-Label::Label(iVector2 pos, iVector2 size, StyleSheet *style, const char *text) : GUIElement(pos, size, style), _text(text) { container = false; _selectable = false; }
-Label::Label(iVector2 pos, iVector2 size, StyleSheet &style, const char *text) : GUIElement(pos, size, &style), _text(text) { container = false; _selectable = false; }
-Label::Label(iVector2 pos, iVector2 size, GUIElement *parent, StyleSheet *style, const char *text) : GUIElement(pos, size, parent, style), _text(text) { container = false; _selectable = false; }
-Label::Label(iVector2 pos, iVector2 size, GUIElement &parent, StyleSheet &style, const char *text) : GUIElement(pos, size, &parent, &style), _text(text) { container = false; _selectable = false; }
+Label::Label(iVector2 pos, iVector2 size, const char *text, GUIElement &parent, StyleSheet &style) : GUIElement(pos, size, &parent, &style), _text(text)
+{
+  container = false;
+  _selectable = false;
+}
 
 
 Label::Label(const Label &from) : GUIElement(from)
@@ -82,7 +79,7 @@ void Label::renderLabel()
     if (renderPos.x + style->font->width > _size.x || renderPos.y + style->font->height > _size.y)
       break;
 
-    GUIManager::renderChar(globalPos + renderPos, _text.at(i), style->foregroundColor, style->font);
+    GUIManager::renderChar(globalPos + renderPos, _text[i], style->foregroundColor, style->font);
     renderPos.x += style->font->width;
   }
 }

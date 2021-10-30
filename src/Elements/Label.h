@@ -7,16 +7,8 @@ class Label : public GUIElement
 {
 public:
   //------ Constructors ------//
-  Label();
-
-  Label(iVector2 pos, iVector2 size, const char *text);
-  Label(iVector2 pos, iVector2 size, GUIElement *parent, const char *text);
-  Label(iVector2 pos, iVector2 size, GUIElement &parent, const char *text);
-
-  Label(iVector2 pos, iVector2 size, StyleSheet *style, const char *text);
-  Label(iVector2 pos, iVector2 size, StyleSheet &style, const char *text);
-  Label(iVector2 pos, iVector2 size, GUIElement *parent, StyleSheet *style, const char *text);
-  Label(iVector2 pos, iVector2 size, GUIElement &parent, StyleSheet &style, const char *text);
+  Label(iVector2 pos, iVector2 size, const char *text, GUIElement *parent, StyleSheet *style);
+  Label(iVector2 pos, iVector2 size, const char *text, GUIElement &parent, StyleSheet &style = DefaultStyle);
 
   Label(const Label &from);
 
@@ -24,11 +16,17 @@ public:
   virtual ~Label();
 
   //------ Getters ------//
-  const std::string &getText() const { return _text; }
+  const String &getText() const { return _text; }
   const char *getPureText() const { return _text.c_str(); }
 
   //------ Setters ------//
   void setText(const char *text)
+  {
+    _text = text;
+    if (autorender == true)
+      render();
+  }
+  void setText(const String &text)
   {
     _text = text;
     if (autorender == true)
@@ -41,7 +39,7 @@ public:
   virtual void render();
 
 protected:
-  std::string _text;
+  String _text;
 
   void renderLabel();
 };

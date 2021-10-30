@@ -21,9 +21,10 @@ public:
 
   void back();
 
-  const GUIElement &getSelected() const;
+  GUIElement *getSelected() const;
 
 protected:
+  GUIElement *_base;
   GUIElement *_selectionBase;
   GUIElement *_selectedElement;
 };

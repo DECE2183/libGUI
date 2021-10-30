@@ -9,21 +9,10 @@ class GUIElement
 {
 public:
   //------ Constructors ------//
-  GUIElement();
-  GUIElement(GUIElement *parent);
-  GUIElement(GUIElement &parent);
-  GUIElement(iVector2 pos, iVector2 size);
-  GUIElement(iVector2 pos, iVector2 size, GUIElement *parent);
-  GUIElement(iVector2 pos, iVector2 size, GUIElement &parent);
-
   GUIElement(StyleSheet *style);
-  GUIElement(StyleSheet &style);
   GUIElement(GUIElement *parent, StyleSheet *style);
-  GUIElement(GUIElement &parent, StyleSheet &style);
   GUIElement(iVector2 pos, iVector2 size, StyleSheet *style);
-  GUIElement(iVector2 pos, iVector2 size, StyleSheet &style);
   GUIElement(iVector2 pos, iVector2 size, GUIElement *parent, StyleSheet *style);
-  GUIElement(iVector2 pos, iVector2 size, GUIElement &parent, StyleSheet &style);
 
   //------ Destructor ------//
   virtual ~GUIElement();
@@ -37,6 +26,7 @@ public:
   bool autorender = true;
 
   Event<GUIElement> onClick = Event<GUIElement>(this);
+  Event<GUIElement> onSelect = Event<GUIElement>(this);
 
 
   //------ Operators ------//
@@ -74,19 +64,7 @@ public:
         renderParent();
     }
   }
-  void setPosition(const iVector2 &pos)
-  {
-    _position = pos;
-    if (autorender == true)
-      renderParent();
-  }
-  void setSize(const iVector2 &size)
-  {
-    _size = size;
-    if (autorender == true)
-      renderParent();
-  }
-  void setPosition(int x, int y)
+  virtual void setPosition(int x, int y)
   {
     setPosition(iVector2(x, y));
   }
@@ -147,15 +125,18 @@ public:
   virtual void setState(State state);
   virtual void render();
   virtual void select();
-  virtual void unselect();
+  virtual void deselect();
   virtual void startClick();
   virtual void endClick();
+  virtual void setPosition(const iVector2 &pos);
+  virtual void setSize(const iVector2 &size);
+
+  virtual GUIElement *getNext(uint16_t selectIndex);
+  virtual GUIElement *getPrev(uint16_t selectIndex);
 
 protected:
   void renderParent();
   void renderChildren();
-
-  void triggerEvent(EventType ev);
 
   bool _selectable = true;
   bool _visible = true;
@@ -163,7 +144,7 @@ protected:
   iVector2 _size = iVector2(0, 0);
 
   State _state = Normal;
-  StyleSheet *_styles = &DefaultStyle;
+  StyleSheet *_styles;
 
   GUIElement *_parent;
   std::vector<GUIElement*> _children;

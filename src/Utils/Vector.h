@@ -8,7 +8,13 @@ public:
   number x;
   number y;
 
-  Vector2(number _x = 0, number _y = 0)
+  Vector2(number v = 0)
+  {
+    x = v;
+    y = v;
+  }
+
+  Vector2(number _x, number _y)
   {
     x = _x;
     y = _y;

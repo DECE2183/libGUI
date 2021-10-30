@@ -1,11 +1,6 @@
 #include "Section.h"
 
 //================= CONSTRUCTOR ===================//
-Section::Section() : GUIElement() {}
-Section::Section(iVector2 pos, iVector2 size) : GUIElement(pos, size) {}
-Section::Section(iVector2 pos, iVector2 size, GUIElement *parent) : GUIElement(pos, size, parent) {}
-Section::Section(iVector2 pos, iVector2 size, GUIElement &parent) : GUIElement(pos, size, &parent) {}
-
 Section::Section(iVector2 pos, iVector2 size, StyleSheet *style) : GUIElement(pos, size, style) {}
 Section::Section(iVector2 pos, iVector2 size, StyleSheet &style) : GUIElement(pos, size, &style) {}
 Section::Section(iVector2 pos, iVector2 size, GUIElement *parent, StyleSheet *style) : GUIElement(pos, size, parent, style) {}

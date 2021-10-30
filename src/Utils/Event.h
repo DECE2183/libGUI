@@ -1,30 +1,24 @@
 #pragma once
 #include <stdlib.h>
 
-enum EventType
-{
-  Click,
-  EventsCount,
-};
-
-template <typename SourceType>
+template <typename SourceType, typename... Arguments>
 struct Callback
 {
-  Callback(void (*_method)(SourceType &source))
+  Callback(void (*_method)(SourceType &source, Arguments &...args))
   {
     method = _method;
   }
 
-  void call(SourceType &source) const
+  void call(SourceType &source, Arguments &...args) const
   {
-    method(source);
+    method(source, args...);
   }
-  void call(SourceType *source) const
+  void call(SourceType *source, Arguments *...args) const
   {
-    method(*source);
+    method(*source, *args...);
   }
 
-  bool operator== (void (*_method)(SourceType &source))
+  bool operator== (void (*_method)(SourceType &source, Arguments &...args))
   {
     return method == _method;
   }
@@ -32,19 +26,19 @@ struct Callback
   void (*method)(SourceType &source);
 };
 
-template <typename SourceType>
+template <typename SourceType, typename... Arguments>
 class Event
 {
 public:
   Event(SourceType *source) { _source = source; }
   Event(SourceType &source) { _source = &source; }
 
-  void attachCallback(void (*callback)(SourceType &source))
+  void attachCallback(void (*callback)(SourceType &source, Arguments &...args))
   {
     _callbacks.emplace_back(callback);
   }
 
-  void detachCallback(void (*callback)(SourceType &source))
+  void detachCallback(void (*callback)(SourceType &source, Arguments &...args))
   {
     for (uint16_t i = 0; i < _callbacks.size(); i++)
     {
@@ -56,29 +50,43 @@ public:
     }
   }
 
-  Event<SourceType> &operator+=(void (*callback)(SourceType &source))
+  template <typename T>
+  void redirect(Event<T> *ev)
+  {
+    _redirectionEvent = ev;
+  }
+
+  Event<SourceType, Arguments...> &operator+=(void (*callback)(SourceType &source, Arguments &...args))
   {
     attachCallback(callback);
     return *this;
   }
-  Event<SourceType> &operator-=(void (*callback)(SourceType &source))
+  Event<SourceType, Arguments...> &operator-=(void (*callback)(SourceType &source, Arguments &...args))
   {
     detachCallback(callback);
     return *this;
   }
 
-  void trigger() const
+  void trigger(Arguments &...args) const
   {
-    if (_callbacks.empty())
-      return;
-    
-    for (uint16_t i = 0; i < _callbacks.size(); i++)
+    if (_redirectionEvent)
     {
-      _callbacks[i].call(_source);
+      _redirectionEvent->trigger(&args...);
+    }
+    else
+    {
+      if (_callbacks.empty())
+        return;
+      
+      for (uint16_t i = 0; i < _callbacks.size(); i++)
+      {
+        _callbacks[i].call(_source, args...);
+      }
     }
   }
 
 protected:
   SourceType *_source;
-  std::vector<Callback<SourceType>> _callbacks;
+  std::vector<Callback<SourceType, Arguments...>> _callbacks;
+  Event *_redirectionEvent;
 };

@@ -2,6 +2,7 @@
 
 Selector::Selector(GUIElement *base)
 {
+  _base = _base;
   _selectionBase = base;
 
   if (_selectionBase->hasChildren() == true)
@@ -36,7 +37,7 @@ void Selector::select(GUIElement *element)
     return;
 
   if (_selectedElement)
-    _selectedElement->unselect();
+    _selectedElement->deselect();
 
   if (!_selectionBase || _selectionBase->hasChild(element) == false)
     _selectionBase = element->getParent();
@@ -56,18 +57,14 @@ void Selector::next()
   if (!_selectedElement) _selectedElement = _selectionBase->getChild(0);
   else if (_selectionBase->hasChild(_selectedElement) == false) return;
 
-  uint16_t selectIndex = _selectionBase->findChildIndex(_selectedElement) + 1;
+  if (_selectedElement)
+    _selectedElement->deselect();
 
-  if (selectIndex >= _selectionBase->childrenCount()) return;
-  GUIElement *selectElement = _selectionBase->getChild(selectIndex);
+  uint16_t selectIndex = _selectionBase->findChildIndex(_selectedElement);
+  if (selectIndex >= _selectionBase->childrenCount() - 1) return;
 
-  while (selectElement->isVisible() == false || selectElement->isSelecable() == false)
-  {
-    selectIndex++;
-    if (selectIndex >= _selectionBase->childrenCount()) return;
-    selectElement = _selectionBase->getChild(selectIndex);
-  }
-  select(selectElement);
+  _selectedElement = _selectionBase->getNext(selectIndex);
+  _selectedElement->select();
 }
 
 void Selector::prev()
@@ -77,23 +74,19 @@ void Selector::prev()
   if (!_selectedElement) _selectedElement = _selectionBase->getChild(0);
   else if (_selectionBase->hasChild(_selectedElement) == false) return;
 
+  if (_selectedElement)
+    _selectedElement->deselect();
+
   uint16_t selectIndex = _selectionBase->findChildIndex(_selectedElement);
-
   if (selectIndex <= 0) return;
-  GUIElement *selectElement = _selectionBase->getChild(selectIndex - 1);
 
-  while (selectElement->isVisible() == false || selectElement->isSelecable() == false)
-  {
-    selectIndex--;
-    if (selectIndex <= 0) return;
-    selectElement = _selectionBase->getChild(selectIndex - 1);
-  }
-  select(selectElement);
+  _selectedElement = _selectionBase->getPrev(selectIndex);
+  _selectedElement->select();
 }
 
 void Selector::enter(GUIElement *base)
 {
-  if (base->hasChildren() == false) return;
+  if (base->hasChildren() == false || base->hasChild(_base) == true) return;
   select(base->getChild(0));
 }
 void Selector::enter(GUIElement &base)
@@ -108,11 +101,11 @@ void Selector::enter()
 
 void Selector::back()
 {
-  if (_selectionBase->hasParent() == false) return;
+  if (_selectionBase->hasParent() == false || _selectionBase == _base) return;
   select(_selectionBase);
 }
 
-const GUIElement &Selector::getSelected() const
+GUIElement *Selector::getSelected() const
 {
   return _selectedElement;
 }
