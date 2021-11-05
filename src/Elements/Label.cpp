@@ -1,4 +1,4 @@
-#include "Label.h"
+#include "Label.hpp"
 
 //================= CONSTRUCTOR ===================//
 Label::Label(iVector2 pos, iVector2 size, const char *text, GUIElement *parent, StyleSheet *style) : GUIElement(pos, size, parent, style), _text(text)

@@ -1,4 +1,4 @@
-#include "Section.h"
+#include "Section.hpp"
 
 //================= CONSTRUCTOR ===================//
 Section::Section(iVector2 pos, iVector2 size, StyleSheet *style) : GUIElement(pos, size, style) {}
@@ -23,18 +23,18 @@ void Section::render()
 //================= PROTECTED ===================//
 void Section::renderBackground()
 {
-  GUIManager::Screen * screen = GUIManager::getScreen();
+  GDisplay *display = GUIManager::getDisplay();
   iVector2 globalPos = getGlobalPosition();
 
   Style *style = _styles->getStyle(_state);
   uint8_t *bThickness = style->borderThickness;
 
-  screen->fillRect(globalPos.x + bThickness[0], globalPos.y + bThickness[1], _size.x - bThickness[0] - bThickness[2], _size.y - bThickness[1] - bThickness[3], style->backgroundColor);
+  display->drawRect(globalPos.x + bThickness[0], globalPos.y + bThickness[1], _size.x - bThickness[0] - bThickness[2], _size.y - bThickness[1] - bThickness[3], style->backgroundColor);
 }
 
 void Section::renderBorders()
 {
-  GUIManager::Screen * screen = GUIManager::getScreen();
+  GDisplay * display = GUIManager::getDisplay();
   iVector2 globalPos = getGlobalPosition();
   Style *style = _styles->getStyle(_state);
 
@@ -42,27 +42,27 @@ void Section::renderBorders()
   if (style->borderThickness[0] > 0)
   {
     for (uint8_t i = 0; i < style->borderThickness[0]; i++)
-      screen->yLine(globalPos.y, globalPos.y + _size.y, globalPos.x + i, style->borderColor);
+      display->drawVLine(globalPos.x + i, globalPos.y, _size.y, style->borderColor);
   }
 
   // Top border
   if (style->borderThickness[1] > 0)
   {
     for (uint8_t i = 0; i < style->borderThickness[1]; i++)
-      screen->xLine(globalPos.x + style->borderThickness[0], globalPos.x + _size.x - style->borderThickness[2], globalPos.y + i, style->borderColor);
+      display->drawHLine(globalPos.x + style->borderThickness[0], globalPos.y + i, _size.x - style->borderThickness[2], style->borderColor);
   }
 
   // Right border
   if (style->borderThickness[2] > 0)
   {
     for (uint8_t i = 0; i < style->borderThickness[2]; i++)
-      screen->yLine(globalPos.y, globalPos.y + _size.y, globalPos.x + _size.x - i - 1, style->borderColor);
+      display->drawVLine(globalPos.x + _size.x - i - 1, globalPos.y, _size.y, style->borderColor);
   }
 
   // Bottom border
   if (style->borderThickness[3] > 0)
   {
     for (uint8_t i = 0; i < style->borderThickness[3]; i++)
-      screen->xLine(globalPos.x + style->borderThickness[0], globalPos.x + _size.x - style->borderThickness[2], globalPos.y + _size.y - i - 1, style->borderColor);
+      display->drawHLine(globalPos.x + style->borderThickness[0], globalPos.y + _size.y - i - 1, _size.x - style->borderThickness[2], style->borderColor);
   }
 }

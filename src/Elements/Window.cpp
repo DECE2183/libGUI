@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "Window.hpp"
 
 #define BASE_OFFSET 5
 #define BASE_HEIGHT 24

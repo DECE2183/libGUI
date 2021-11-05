@@ -1,4 +1,4 @@
-#include "Button.h"
+#include "Button.hpp"
 
 //================= CONSTRUCTOR ===================//
 Button::Button(iVector2 pos, iVector2 size, const char *text, GUIElement *parent, StyleSheet *style) :

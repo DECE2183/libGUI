@@ -1,55 +1,51 @@
-#include "GUIManager.h"
+#include "GUIManager.hpp"
 
 namespace GUIManager
 {
   bool _canRender;
 
-  Screen *_screen;
+  GDisplay *_display;
   GUIElement *_background;
 
   GUIElement *_selectionBase;
   GUIElement *_selectedElement;
 
-  iVector2 _screenSize;
+  iVector2 _displaySize;
 }
 
-void GUIManager::setScreen(GUIManager::Screen *scr)
+void GUIManager::setDisplay(GDisplay *display)
 {
-  if (_screen != NULL)
-    delete _screen;
-
-  _screen = scr;
+  _display = display;
+  render();
 }
-void GUIManager::setScreen(GUIManager::Screen &scr)
+void GUIManager::setDisplay(GDisplay &display)
 {
-  setScreen(&scr);
+  setDisplay(&display);
 }
 
 void GUIManager::setBackground(GUIElement *background)
 {
-  if (_background != NULL)
-    delete _background;
-
   _background = background;
+  render();
 }
 void GUIManager::setBackground(GUIElement &background)
 {
   setBackground(&background);
 }
 
-GUIManager::Screen *GUIManager::getScreen()
+GDisplay *GUIManager::getDisplay()
 {
-  return _screen;
+  return _display;
 }
 
 void GUIManager::render()
 {
-  if (_background == NULL || _screen == NULL)
+  if (_background == NULL || _display == NULL)
     return;
 
   _canRender = true;
 
-  _screen->clear(0x00);
+  _display->fill(GColor());
   _background->render();
 }
 
@@ -58,30 +54,15 @@ bool GUIManager::canRender()
   return _canRender;
 }
 
-void GUIManager::renderChar(iVector2 pos, char ch, Color color, const GFont *font)
+void GUIManager::renderChar(iVector2 pos, char ch, GColor color, const GFont *font)
 {
   if (canRender() == false) return;
   if (!font) return;
   if (font->isCharValid(ch) == false) return;
 
-  unsigned int chH = font->getHeight();
-  unsigned int bRow = font->getBytesPerRow();
-
-  const unsigned char *chPix = font->getPixels() + (ch - font->getFirstChar()) * (chH * bRow);
-
-  for (unsigned int row = 0; row < chH; row++)
-  {
-    for (unsigned char x = 0; x < 8; x++)
-    {
-      for (unsigned char b = 0; b < bRow; b++)
-      {
-        if (chPix[row * bRow + b] & (0b10000000U >> x))
-          _screen->dotFast(pos.x + x + b*8, pos.y + row, color);
-      }
-    }
-  }
+  _display->drawChar(pos, ch, color, font);
 }
-void GUIManager::renderChar(iVector2 pos, char ch, Color color, const GFont &font)
+void GUIManager::renderChar(iVector2 pos, char ch, GColor color, const GFont &font)
 {
   renderChar(pos, ch, color, &font);
 }

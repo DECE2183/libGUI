@@ -1,5 +1,5 @@
-#include "GUIElement.h"
-#include "../GUIManager.h"
+#include "GUIElement.hpp"
+#include "../GUIManager.hpp"
 
 //================= CONSTRUCTOR ===================//
 GUIElement::GUIElement(StyleSheet *style)
@@ -193,13 +193,17 @@ void GUIElement::setPosition(const iVector2 &pos)
 {
   _position = pos;
   if (autorender == true)
+  {
     renderParent();
+  }
 }
 void GUIElement::setSize(const iVector2 &size)
 {
   _size = size;
   if (autorender == true)
+  {
     renderParent();
+  }
 }
 
 GUIElement *GUIElement::getNext(uint16_t selectIndex)

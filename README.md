@@ -1,2 +1,2 @@
 # libGUI
-GUI library for ESP32Lib
+Universal GUI library with styles support.

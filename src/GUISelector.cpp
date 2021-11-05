@@ -1,4 +1,4 @@
-#include "GUISelector.h"
+#include "GUISelector.hpp"
 
 Selector::Selector(GUIElement *base)
 {

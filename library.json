@@ -1,7 +1,7 @@
 {
   "name": "libGUI",
-  "keywords": "VGA, GUI, UI, graphics, font, arduino, esp32, display, bitluni, DECE",
-  "description": "Provides GUI overhead for VGA part of bitluni's ESP32Lib.",
+  "keywords": "GFX, GUI, UI, graphics, font, arduino, esp32, display, DECE",
+  "description": "Universal GUI library with styles support.",
   "repository":
   {
     "type": "git",
