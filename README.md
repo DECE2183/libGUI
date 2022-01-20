@@ -1,2 +1,2 @@
 # libGUI
-Universal GUI library with styles support.
+Universal GUI library with styles support for Arduino/PlatformIO.
